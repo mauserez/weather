@@ -1,12 +1,12 @@
 import { ComponentProps } from "react";
 import { AssociativeArray } from "../../../types/types";
-import { Button, Ticket } from "../../FormComponents";
+import { Button, Card } from "../../FormComponents";
 import weatherStyle from "../../Weather/css/weather.module.css";
 
 export const WeatherNoLocation = () => {
 	return (
 		<div>
-			<Ticket
+			<Card
 				className={`text-3xl justify-center items-center bg-neon flex-col gap-4 ${weatherStyle.weatherError}`}
 			>
 				<span className="text-center">
@@ -27,14 +27,14 @@ export const WeatherNoLocation = () => {
 						Instruction
 					</a>
 				</Button>
-			</Ticket>
+			</Card>
 		</div>
 	);
 };
 
 export const WeatherNoData = () => {
 	return (
-		<Ticket
+		<Card
 			className={`text-3xl justify-center items-center bg-neon ${weatherStyle.weatherError}`}
 		>
 			<span className="mb-4 text-center">
@@ -43,18 +43,18 @@ export const WeatherNoData = () => {
 				your request
 			</span>
 			<i className="bi bi-emoji-dizzy text-6xl"></i>
-		</Ticket>
+		</Card>
 	);
 };
 
 export const WeatherLoading = () => {
 	return (
-		<Ticket
+		<Card
 			className={`text-3xl justify-center items-center bg-neon ${weatherStyle.weatherError}`}
 		>
 			<span className="mb-4 text-center">Loading...</span>
 			<i className="bi bi-globe-central-south-asia text-6xl animate-spin"></i>
-		</Ticket>
+		</Card>
 	);
 };
 

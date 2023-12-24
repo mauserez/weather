@@ -9,7 +9,7 @@ import {
 import { useState, useEffect } from "react";
 import { currentUtcDatePlusTz } from "../../../libs/dayJsHelper";
 
-import { Ticket } from "../../FormComponents";
+import { Card } from "../../FormComponents";
 
 import { WeatherShortForecast } from "./WeatherForecast";
 
@@ -19,34 +19,33 @@ export const WeatherCity = (props: {
 	weatherForecast: WeatherForecastApiResultType;
 	className?: string;
 }) => {
-	const city = props.city;
-	const weather = props.weather;
-	const weatherForecast = props.weatherForecast;
+	const { city, weather, weatherForecast, className } = props;
+	const tzSeconds = weather.timezone;
 	const format = "HH:mm";
 	const [timeState, setTimeState] = useState(
-		currentUtcDatePlusTz(weather.timezone, format)
+		currentUtcDatePlusTz(tzSeconds, format)
 	);
 
 	useEffect(() => {
-		setTimeState(currentUtcDatePlusTz(weather.timezone, format));
+		setTimeState(currentUtcDatePlusTz(tzSeconds, format));
 		const id = setInterval(() => {
-			setTimeState(currentUtcDatePlusTz(weather.timezone, format));
+			setTimeState(currentUtcDatePlusTz(tzSeconds, format));
 		}, 5000);
 
 		return () => {
 			clearInterval(id);
 		};
-	}, [weather.timezone]);
+	}, [tzSeconds]);
 
 	const temp = Math.round(weather.main.temp);
 
 	return (
-		<Ticket
+		<Card
 			style={{
 				backgroundImage: `url("${process.env.PUBLIC_URL}/img/weather/${weather.weather[0].icon}.jpg")`,
 			}}
 			className={`bg-cover bg-no-repeat gap-6 ${weatherStyle.weatherNow} ${
-				props.className ?? ""
+				className ?? ""
 			}`}
 		>
 			<div
@@ -75,6 +74,6 @@ export const WeatherCity = (props: {
 				</div>
 			</div>
 			<WeatherShortForecast weatherForecast={weatherForecast} />
-		</Ticket>
+		</Card>
 	);
 };

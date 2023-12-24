@@ -1,8 +1,8 @@
 import weatherStyle from "../../Weather/css/weather.module.css";
-
 import { AssociativeArrayNumStr } from "../../../types/types";
 import { WeatherNowApiResultType } from "../../../api/weather/types/weatherApiTypes";
 import { utcDateFromUnixPlusTz } from "../../../libs/dayJsHelper";
+import { gpaToMm } from "../../../libs/util";
 
 export const WeatherNow = (weather: WeatherNowApiResultType) => {
 	const weatherMain = weather.main as AssociativeArrayNumStr;
@@ -25,7 +25,7 @@ export const WeatherNow = (weather: WeatherNowApiResultType) => {
 
 				if (metric[0] === "pressure") {
 					if (typeof val === "number") {
-						val = val * 0.750062;
+						val = gpaToMm(val);
 					}
 				}
 

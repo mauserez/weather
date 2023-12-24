@@ -15,7 +15,8 @@ import {
 	WeatherByDayIcon,
 	WeatherThermometer,
 } from "./WeatherOther";
-import { Button, Ticket } from "../../FormComponents";
+import { Button, Card } from "../../FormComponents";
+import { gpaToMm } from "../../../libs/util";
 
 type WeatherShortForecastType = ComponentProps<"div"> & {
 	weatherForecast: WeatherForecastApiResultType;
@@ -69,7 +70,7 @@ export const WeatherForecast = (props: WeatherForecastType) => {
 	};
 
 	return (
-		<Ticket
+		<Card
 			className={`px-0 border-0 shadow-none ${weatherStyle.weatherForecast}`}
 		>
 			<div
@@ -85,7 +86,7 @@ export const WeatherForecast = (props: WeatherForecastType) => {
 				/>
 			</div>
 			<WeatherForecastBody forecastType={forecastType} {...props} />
-		</Ticket>
+		</Card>
 	);
 };
 
@@ -106,8 +107,8 @@ const WeatherForecastBody = (
 	return (
 		<div className={`font-bold ${weatherStyle.weatherForecastBody}`}>
 			{list.map((forecast, i) => {
-				const tempDay = forecast.main.temp_day ?? 0;
-				const tempNight = forecast.main.temp_night ?? 0;
+				const tzSeconds = weatherForecast.city.timezone;
+
 				return (
 					<div
 						key={i}
@@ -117,68 +118,9 @@ const WeatherForecastBody = (
 					>
 						<div className="flex justify-between flex-wrap">
 							{forecastType === "day" ? (
-								<>
-									<div className="text-2xl flex text-center items-center gap-2">
-										{utcDateFromUnixPlusTz(
-											forecast.dt,
-											weatherForecast.city.timezone,
-											"DD.MM"
-										)}
-									</div>
-
-									<div className={`flex gap-1 items-center`}>
-										<div className="flex">
-											<WeatherThermometer
-												className="text-xl"
-												temperature={tempDay}
-											></WeatherThermometer>
-											<div>
-												<span className={`text-xl`}>{Math.round(tempDay)}</span>
-												<span className={`text-sm`}> C</span>
-											</div>
-										</div>
-
-										{forecast.main.temp_night ? (
-											<div className="flex text-slate-300">
-												<WeatherThermometer
-													className="text-xl"
-													temperature={tempNight}
-												></WeatherThermometer>
-												<div>
-													<span className={`text-xl`}>
-														{Math.round(tempNight) ?? 0}
-													</span>
-													<span className={`text-sm`}> C</span>
-												</div>
-											</div>
-										) : (
-											""
-										)}
-									</div>
-								</>
+								<ByDayTemperature forecast={forecast} tzSeconds={tzSeconds} />
 							) : (
-								<>
-									<div className="text-lg flex text-center items-center gap-2">
-										{utcDateFromUnixPlusTz(
-											forecast.dt,
-											weatherForecast.city.timezone,
-											"DD.MM HH:mm"
-										)}
-									</div>
-
-									<div className={`flex gap-1 items-center`}>
-										<WeatherThermometer
-											className="text-2xl"
-											temperature={forecast.main.temp}
-										></WeatherThermometer>
-										<div>
-											<span className={`text-2xl`}>
-												{Math.round(forecast.main.temp)}
-											</span>
-											<span className={`text-sm`}> C</span>
-										</div>
-									</div>
-								</>
+								<ByHourTemperature forecast={forecast} tzSeconds={tzSeconds} />
 							)}
 						</div>
 
@@ -215,7 +157,7 @@ const WeatherForecastBody = (
 							</div>
 							<div className={`flex gap-1 items-center`}>
 								<span className={`text-2xl`}>
-									{Math.round(forecast.main.pressure * 0.750062)}
+									{gpaToMm(forecast.main.pressure)}
 								</span>
 								<span className={`text-sm mt-2`}>mm</span>
 							</div>
@@ -224,6 +166,77 @@ const WeatherForecastBody = (
 				);
 			})}
 		</div>
+	);
+};
+
+const ByDayTemperature = (props: {
+	forecast: WeatherForecastApiResultTypeListItem;
+	tzSeconds: number;
+}) => {
+	const { forecast, tzSeconds } = props;
+	const tempDay = forecast.main.temp_day ?? 0;
+	const tempNight = forecast.main.temp_night ?? 0;
+
+	return (
+		<>
+			<div className="text-2xl flex text-center items-center gap-2">
+				{utcDateFromUnixPlusTz(forecast.dt, tzSeconds, "DD.MM")}
+			</div>
+
+			<div className={`flex gap-1 items-center`}>
+				<div className="flex">
+					<WeatherThermometer
+						className="text-xl"
+						temperature={tempDay}
+					></WeatherThermometer>
+					<div>
+						<span className={`text-xl`}>{Math.round(tempDay)}</span>
+						<span className={`text-sm`}> C</span>
+					</div>
+				</div>
+
+				{forecast.main.temp_night ? (
+					<div className="flex text-slate-300">
+						<WeatherThermometer
+							className="text-xl"
+							temperature={tempNight}
+						></WeatherThermometer>
+						<div>
+							<span className={`text-xl`}>{Math.round(tempNight) ?? 0}</span>
+							<span className={`text-sm`}> C</span>
+						</div>
+					</div>
+				) : (
+					""
+				)}
+			</div>
+		</>
+	);
+};
+
+const ByHourTemperature = (props: {
+	forecast: WeatherForecastApiResultTypeListItem;
+	tzSeconds: number;
+}) => {
+	const { forecast, tzSeconds } = props;
+
+	return (
+		<>
+			<div className="text-lg flex text-center items-center gap-2">
+				{utcDateFromUnixPlusTz(forecast.dt, tzSeconds, "DD.MM HH:mm")}
+			</div>
+
+			<div className={`flex gap-1 items-center`}>
+				<WeatherThermometer
+					className="text-2xl"
+					temperature={forecast.main.temp}
+				></WeatherThermometer>
+				<div>
+					<span className={`text-2xl`}>{Math.round(forecast.main.temp)}</span>
+					<span className={`text-sm`}> C</span>
+				</div>
+			</div>
+		</>
 	);
 };
 

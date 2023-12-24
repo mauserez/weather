@@ -1,16 +1,15 @@
 export const getUserLocation = (props: {
-	setState?: (coords: { lat: number; lon: number }) => void;
+	setCoords?: (coords: { lat: number; lon: number }) => void;
 	force?: boolean;
 	callback?: () => void;
 }) => {
-	const setState = props.setState;
-	const callback = props.callback;
+	const { setCoords, callback, force } = props;
 
 	if (localStorage.userLocation) {
 		const coords = JSON.parse(localStorage.userLocation);
 
-		if (setState) {
-			setState(coords);
+		if (setCoords) {
+			setCoords(coords);
 		}
 
 		if (props.force !== true) {
@@ -26,8 +25,8 @@ export const getUserLocation = (props: {
 					lon: position.coords.longitude,
 				};
 
-				if (setState) {
-					setState(coords);
+				if (setCoords) {
+					setCoords(coords);
 					localStorage.setItem("userLocation", JSON.stringify(coords));
 				}
 
@@ -36,14 +35,14 @@ export const getUserLocation = (props: {
 				}
 			},
 			(error) => {
-				if (setState) {
-					setState({ lat: -1, lon: -1 });
+				if (setCoords) {
+					setCoords({ lat: -1, lon: -1 });
 				}
 			}
 		);
 	} else {
-		if (setState) {
-			setState({ lat: -1, lon: -1 });
+		if (setCoords) {
+			setCoords({ lat: -1, lon: -1 });
 		}
 	}
 };

@@ -8,7 +8,6 @@ type InputProps = ComponentProps<"input"> & {
 
 export const Input = ({ ...props }: InputProps) => {
 	const [valState, setValState] = useState(props.value ?? "");
-
 	const { changeCustom, wrapClassName, ...otherProps } = props;
 
 	useEffect(() => {
@@ -50,12 +49,12 @@ export const Button = ({
 	children,
 	text,
 	className,
-	...props
+	...otherProps
 }: ButtonProps) => {
 	return (
 		<button
 			className={`flex justify-center items-center def-button def-border px-3 py-2 bg-neon ${className}`}
-			{...props}
+			{...otherProps}
 		>
 			{children}
 			{text ?? "Отправить"}
@@ -68,17 +67,19 @@ type TicketProps = ComponentProps<"div">; /* {
 	//className?: string;
 }; */
 
-export const Ticket = (props: TicketProps) => {
+export const Card = (props: TicketProps) => {
+	const { children, className, ...otherProps } = props;
+
 	return (
 		<div
-			{...props}
+			{...otherProps}
 			className={`flex flex-col
 			w-full h-full
 			def-border px-4 py-3
 			rounded-xl shadow-lg
-			${props.className ?? ""}`}
+			${className ?? ""}`}
 		>
-			{props.children}
+			{children}
 		</div>
 	);
 };
